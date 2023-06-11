@@ -1,47 +1,38 @@
 package com.ruoyi.controller.system;
 
-import java.util.List;
-
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.entity.SysNotice;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.model.R;
+import com.ruoyi.common.model.query.SysNoticeQuery;
+import com.ruoyi.common.service.ISysNoticeService;
 import com.ruoyi.common.util.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.entity.SysNotice;
-import com.ruoyi.common.service.ISysNoticeService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 公告 信息操作处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
 @RequestMapping("/system/notice")
+@RequiredArgsConstructor
 public class SysNoticeController {
-    @Autowired
-    private ISysNoticeService noticeService;
+    private final ISysNoticeService noticeService;
 
     /**
      * 获取通知公告列表
      */
     @PreAuthorize("@ss.hasPermi('system:notice:list')")
     @GetMapping("/list")
-    public R list(SysNotice notice)
-    {
-        PageUtils.startPage();
-        List<SysNotice> list = noticeService.selectNoticeList(notice);
-        return R.ok().put("rows", list).put("total", new PageInfo(list).getTotal());
+    public R<List<SysNotice>> list(SysNoticeQuery notice, IPage<SysNotice> page) {
+        return R.ok(noticeService.page(page, notice.toQuery()));
     }
 
     /**
@@ -49,10 +40,8 @@ public class SysNoticeController {
      */
     @PreAuthorize("@ss.hasPermi('system:notice:query')")
     @GetMapping(value = "/{noticeId}")
-    public R getInfo(@PathVariable Long noticeId)
-    {
-        SysNotice data = noticeService.selectNoticeById(noticeId);
-        return R.ok(data);
+    public R<SysNotice> getInfo(@PathVariable Long noticeId) {
+        return R.ok(noticeService.getById(noticeId));
     }
 
     /**
@@ -61,10 +50,9 @@ public class SysNoticeController {
     @PreAuthorize("@ss.hasPermi('system:notice:add')")
     @Log(title = "通知公告", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@Validated @RequestBody SysNotice notice)
-    {
+    public R<Boolean> add(@Validated @RequestBody SysNotice notice) {
         notice.setCreateBy(SecurityUtils.getLoginUser().getUsername());
-        return noticeService.insertNotice(notice) > 0 ? R.ok() : R.fail();
+        return R.ok(noticeService.save(notice));
     }
 
     /**
@@ -73,10 +61,9 @@ public class SysNoticeController {
     @PreAuthorize("@ss.hasPermi('system:notice:edit')")
     @Log(title = "通知公告", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@Validated @RequestBody SysNotice notice)
-    {
+    public R<Boolean> edit(@Validated @RequestBody SysNotice notice) {
         notice.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return noticeService.updateNotice(notice) > 0 ? R.ok() : R.fail();
+        return R.ok(noticeService.updateById(notice));
     }
 
     /**
@@ -85,8 +72,7 @@ public class SysNoticeController {
     @PreAuthorize("@ss.hasPermi('system:notice:remove')")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @DeleteMapping("/{noticeIds}")
-    public R remove(@PathVariable Long[] noticeIds)
-    {
-        return noticeService.deleteNoticeByIds(noticeIds) > 0 ? R.ok() : R.fail();
+    public R<Boolean> remove(@PathVariable List<Long> noticeIds) {
+        return R.ok(noticeService.removeByIds(noticeIds));
     }
 }

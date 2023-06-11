@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 public @interface ExcelDicts {
     ExcelDict[] value() default {};
 
-    ExcelDict defaultDict() default @ExcelDict(key = "0", value = "未知");
+    ExcelDict defaultDict() default @ExcelDict(key = 0, value = "未知");
 }

@@ -1,54 +1,45 @@
 package com.ruoyi.controller.system;
 
-import com.ruoyi.common.model.R;
-import com.ruoyi.common.service.SysPasswordService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.entity.SysUser;
-import com.ruoyi.common.model.login.LoginUser;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.model.R;
+import com.ruoyi.common.model.login.LoginUser;
+import com.ruoyi.common.service.ISysUserService;
+import com.ruoyi.common.service.SysPasswordService;
+import com.ruoyi.common.service.TokenService;
 import com.ruoyi.common.util.SecurityUtils;
 import com.ruoyi.common.util.StringUtils;
 import com.ruoyi.common.util.file.FileUploadUtils;
 import com.ruoyi.common.util.file.MimeTypeUtils;
-import com.ruoyi.common.service.TokenService;
-import com.ruoyi.common.service.ISysUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 个人信息 业务处理
- * 
+ *
  * @author ruoyi
  */
 @RestController
 @RequestMapping("/system/user/profile")
+@RequiredArgsConstructor
 public class SysProfileController {
-    @Autowired
-    private ISysUserService userService;
+    private final ISysUserService userService;
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private SysPasswordService passwordService;
+    private final SysPasswordService passwordService;
 
     /**
      * 个人信息
      */
     @GetMapping
-    public R profile()
-    {
+    public R<?> profile() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser user = loginUser.getUser();
-        R ajax = R.ok((Object) user);
+        R<?> ajax = R.ok((Object) user);
         ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
         ajax.put("postGroup", userService.selectUserPostGroup(loginUser.getUsername()));
         return ajax;
@@ -59,25 +50,21 @@ public class SysProfileController {
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R updateProfile(@RequestBody SysUser user)
-    {
+    public R<?> updateProfile(@RequestBody SysUser user) {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser sysUser = loginUser.getUser();
         user.setUserName(sysUser.getUserName());
-        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user))
-        {
+        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
         }
-        if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user))
-        {
+        if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setUserId(sysUser.getUserId());
         user.setPassword(null);
         user.setAvatar(null);
         user.setDeptId(null);
-        if (userService.updateUserProfile(user) > 0)
-        {
+        if (userService.updateUserProfile(user) > 0) {
             // 更新缓存用户信息
             sysUser.setNickName(user.getNickName());
             sysUser.setPhonenumber(user.getPhonenumber());
@@ -94,21 +81,17 @@ public class SysProfileController {
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
-    public R updatePwd(String oldPassword, String newPassword)
-    {
+    public R<?> updatePwd(String oldPassword, String newPassword) {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         String userName = loginUser.getUsername();
         String password = loginUser.getPassword();
-        if (!passwordService.matches(oldPassword,password))
-        {
+        if (!passwordService.matches(oldPassword, password)) {
             return R.fail("修改密码失败，旧密码错误");
         }
-        if (passwordService.matches(newPassword, password))
-        {
+        if (passwordService.matches(newPassword, password)) {
             return R.fail("新密码不能与旧密码相同");
         }
-        if (userService.resetUserPwd(userName, passwordService.encode(newPassword)) > 0)
-        {
+        if (userService.resetUserPwd(userName, passwordService.encode(newPassword)) > 0) {
             // 更新缓存用户密码
             loginUser.getUser().setPassword(passwordService.encode(newPassword));
             tokenService.setLoginUser(loginUser);
@@ -122,15 +105,12 @@ public class SysProfileController {
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
-    public R avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception
-    {
-        if (!file.isEmpty())
-        {
+    public R<?> avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception {
+        if (!file.isEmpty()) {
             LoginUser loginUser = SecurityUtils.getLoginUser();
             String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
-            if (userService.updateUserAvatar(loginUser.getUsername(), avatar))
-            {
-                R ajax = R.ok();
+            if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
+                R<?> ajax = R.ok();
                 ajax.put("imgUrl", avatar);
                 // 更新缓存用户头像
                 loginUser.getUser().setAvatar(avatar);

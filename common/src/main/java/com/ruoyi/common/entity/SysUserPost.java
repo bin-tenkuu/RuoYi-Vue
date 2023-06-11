@@ -2,6 +2,7 @@ package com.ruoyi.common.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @Getter
 @Setter
+@ToString
 public class SysUserPost {
     /**
      * 用户ID
@@ -22,12 +24,4 @@ public class SysUserPost {
      * 岗位ID
      */
     private Long postId;
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userId", getUserId())
-                .append("postId", getPostId())
-                .toString();
-    }
 }

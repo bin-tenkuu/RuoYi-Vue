@@ -1,4 +1,4 @@
-package com.ruoyi.common.model.sysconfig;
+package com.ruoyi.common.model.query;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ruoyi.common.entity.SysConfig;

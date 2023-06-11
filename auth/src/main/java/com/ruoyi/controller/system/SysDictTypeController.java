@@ -3,11 +3,12 @@ package com.ruoyi.controller.system;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.pagehelper.PageInfo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ruoyi.common.model.R;
+import com.ruoyi.common.model.query.SysDictTypeQuery;
 import com.ruoyi.common.util.poi.ExcelUtils;
 import com.ruoyi.common.util.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,30 +26,26 @@ import com.ruoyi.common.service.ISysDictTypeService;
 
 /**
  * 数据字典信息
- * 
+ *
  * @author ruoyi
  */
 @RestController
 @RequestMapping("/system/dict/type")
+@RequiredArgsConstructor
 public class SysDictTypeController {
-    @Autowired
-    private ISysDictTypeService dictTypeService;
+    private final ISysDictTypeService dictTypeService;
 
     @PreAuthorize("@ss.hasPermi('system:dict:list')")
     @GetMapping("/list")
-    public R list(SysDictType dictType)
-    {
-        PageUtils.startPage();
-        List<SysDictType> list = dictTypeService.selectDictTypeList(dictType);
-        return R.ok().put("rows", list).put("total", new PageInfo(list).getTotal());
+    public R<List<SysDictType>> list(SysDictTypeQuery dictType, IPage<SysDictType> page) {
+        return R.ok(dictTypeService.page(page, dictType.toQuery()));
     }
 
     @Log(title = "字典类型", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('system:dict:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, SysDictType dictType)
-    {
-        List<SysDictType> list = dictTypeService.selectDictTypeList(dictType);
+    public void export(HttpServletResponse response, SysDictTypeQuery dictType) {
+        List<SysDictType> list = dictTypeService.list(dictType.toQuery());
         ExcelUtils.writeExcel(response, list, "字典类型", "字典类型", SysDictType.class);
     }
 
@@ -57,10 +54,8 @@ public class SysDictTypeController {
      */
     @PreAuthorize("@ss.hasPermi('system:dict:query')")
     @GetMapping(value = "/{dictId}")
-    public R getInfo(@PathVariable Long dictId)
-    {
-        SysDictType data = dictTypeService.selectDictTypeById(dictId);
-        return R.ok(data);
+    public R<SysDictType> getInfo(@PathVariable Long dictId) {
+        return R.ok(dictTypeService.getById(dictId));
     }
 
     /**
@@ -69,10 +64,8 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:add')")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@Validated @RequestBody SysDictType dict)
-    {
-        if (!dictTypeService.checkDictTypeUnique(dict))
-        {
+    public R<?> add(@Validated @RequestBody SysDictType dict) {
+        if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.fail("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         dict.setCreateBy(SecurityUtils.getLoginUser().getUsername());
@@ -85,10 +78,8 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:edit')")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@Validated @RequestBody SysDictType dict)
-    {
-        if (!dictTypeService.checkDictTypeUnique(dict))
-        {
+    public R<?> edit(@Validated @RequestBody SysDictType dict) {
+        if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.fail("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         dict.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
@@ -101,10 +92,8 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
-    public R remove(@PathVariable Long[] dictIds)
-    {
-        dictTypeService.deleteDictTypeByIds(dictIds);
-        return R.ok();
+    public R<Boolean> remove(@PathVariable List<Long> dictIds) {
+        return R.ok(dictTypeService.removeByIds(dictIds));
     }
 
     /**
@@ -113,8 +102,7 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
-    public R refreshCache()
-    {
+    public R<?> refreshCache() {
         dictTypeService.resetDictCache();
         return R.ok();
     }
@@ -123,9 +111,7 @@ public class SysDictTypeController {
      * 获取字典选择框列表
      */
     @GetMapping("/optionselect")
-    public R optionselect()
-    {
-        List<SysDictType> dictTypes = dictTypeService.selectDictTypeAll();
-        return R.ok(dictTypes);
+    public R<List<SysDictType>> optionselect() {
+        return R.ok(dictTypeService.list());
     }
 }

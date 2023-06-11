@@ -8,11 +8,10 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.annotation.ExcelDict;
+import com.ruoyi.common.util.poi.IntDictConverter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -66,13 +65,13 @@ public class SysConfig extends BaseEntity {
     private String configValue;
 
     /**
-     * 系统内置（Y是 N否）
+     * 系统内置（1是 0否）
      */
     @TableField(value = "config_type")
-    @ExcelProperty(value = "系统内置")
-    @ExcelDict(key = "Y", value = "是")
-    @ExcelDict(key = "N", value = "否")
-    private String configType;
+    @ExcelProperty(value = "系统内置", converter = IntDictConverter.class)
+    @ExcelDict(key = 1, value = "是")
+    @ExcelDict(key = 0, value = "否")
+    private Integer configType;
 
     public static final String CONFIG_NAME = "config_name";
     public static final String CONFIG_KEY = "config_key";

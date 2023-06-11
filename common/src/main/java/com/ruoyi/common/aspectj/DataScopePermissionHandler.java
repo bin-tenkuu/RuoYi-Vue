@@ -29,27 +29,27 @@ public class DataScopePermissionHandler implements DataPermissionHandler {
     /**
      * 全部数据权限
      */
-    public static final String DATA_SCOPE_ALL = "1";
+    public static final int DATA_SCOPE_ALL = 1;
 
     /**
      * 自定数据权限
      */
-    public static final String DATA_SCOPE_CUSTOM = "2";
+    public static final int DATA_SCOPE_CUSTOM = 2;
 
     /**
      * 部门数据权限
      */
-    public static final String DATA_SCOPE_DEPT = "3";
+    public static final int DATA_SCOPE_DEPT = 3;
 
     /**
      * 部门及以下数据权限
      */
-    public static final String DATA_SCOPE_DEPT_AND_CHILD = "4";
+    public static final int DATA_SCOPE_DEPT_AND_CHILD = 4;
 
     /**
      * 仅本人数据权限
      */
-    public static final String DATA_SCOPE_SELF = "5";
+    public static final int DATA_SCOPE_SELF = 5;
 
     /**
      * 通过 ThreadLocal 记录权限相关的属性值
@@ -79,7 +79,7 @@ public class DataScopePermissionHandler implements DataPermissionHandler {
     }
 
     /**
-     * @param where 原SQL Where 条件表达式
+     * @param where             原SQL Where 条件表达式
      * @param mappedStatementId Mapper接口方法ID
      */
     @Override
@@ -88,20 +88,18 @@ public class DataScopePermissionHandler implements DataPermissionHandler {
         if (controllerDataScope == null) {
             return where;
         }
-        String permission = StringUtils.defaultIfEmpty(controllerDataScope.permission(), PermissionContextHolder.getContext());
+        String permission =
+                StringUtils.defaultIfEmpty(controllerDataScope.permission(), PermissionContextHolder.getContext());
         String deptAlias = controllerDataScope.deptAlias();
         String userAlias = controllerDataScope.userAlias();
 
-        if (where == null) {
-            where = new HexValue(" TRUE ");
-        }
         StringBuilder sqlString = new StringBuilder();
-        Set<String> conditions = new HashSet<>();
+        Set<Integer> conditions = new HashSet<>();
 
         SysUser user = SecurityUtils.getLoginUser().getUser();
         for (SysRole role : user.getRoles()) {
-            String dataScope = role.getDataScope();
-            if (!DATA_SCOPE_CUSTOM.equals(dataScope) && conditions.contains(dataScope)) {
+            int dataScope = role.getDataScope();
+            if (DATA_SCOPE_CUSTOM != dataScope && conditions.contains(dataScope)) {
                 continue;
             }
             if (StringUtils.isNotEmpty(permission)
@@ -109,21 +107,21 @@ public class DataScopePermissionHandler implements DataPermissionHandler {
                     && !StringUtils.containsAny(role.getPermissions(), permission.split(","))) {
                 continue;
             }
-            if (DATA_SCOPE_ALL.equals(dataScope)) {
+            if (DATA_SCOPE_ALL == dataScope) {
                 sqlString.setLength(0);
                 conditions.add(dataScope);
                 break;
-            } else if (DATA_SCOPE_CUSTOM.equals(dataScope)) {
+            } else if (DATA_SCOPE_CUSTOM == dataScope) {
                 sqlString.append(" OR ")
                         .append(deptAlias).append(".dept_id IN ( SELECT dept_id FROM sys_role_dept WHERE role_id = ")
                         .append(role.getRoleId()).append(" ) ");
-            } else if (DATA_SCOPE_DEPT.equals(dataScope)) {
+            } else if (DATA_SCOPE_DEPT == dataScope) {
                 sqlString.append(" OR ").append(deptAlias).append(".dept_id = ").append(user.getDeptId());
-            } else if (DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope)) {
+            } else if (DATA_SCOPE_DEPT_AND_CHILD == dataScope) {
                 sqlString.append(" OR ")
                         .append(deptAlias).append(".dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id = ")
                         .append(user.getDeptId()).append(" or find_in_set( ").append(user.getDeptId());
-            } else if (DATA_SCOPE_SELF.equals(dataScope)) {
+            } else if (DATA_SCOPE_SELF == dataScope) {
                 if (userAlias.isBlank()) {
                     // 数据权限为仅本人且没有userAlias别名不查询任何数据
                     sqlString.append(" OR ").append(deptAlias).append(".dept_id = 0");
@@ -143,6 +141,9 @@ public class DataScopePermissionHandler implements DataPermissionHandler {
         sqlString.replace(0, 4, "(").append(")");
         Expression between = new HexValue(sqlString.toString());
 
+        if (where == null) {
+            return between;
+        }
         return new AndExpression(where, between);
     }
 

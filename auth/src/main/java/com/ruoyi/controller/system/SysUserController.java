@@ -102,7 +102,7 @@ public class SysUserController {
         R<SysUser> ajax = R.ok();
         List<SysRole> roles = roleService.selectRoleAll();
         ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
-        ajax.put("posts", postService.selectPostAll());
+        ajax.put("posts", postService.list());
         if (userId != null) {
             SysUser sysUser = userService.selectUserById(userId);
             ajax.setData(sysUser);

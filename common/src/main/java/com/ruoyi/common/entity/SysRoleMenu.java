@@ -2,6 +2,7 @@ package com.ruoyi.common.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -12,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  */
 @Getter
 @Setter
+@ToString
 public class SysRoleMenu {
     /**
      * 角色ID
@@ -23,11 +25,4 @@ public class SysRoleMenu {
      */
     private Long menuId;
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("roleId", getRoleId())
-                .append("menuId", getMenuId())
-                .toString();
-    }
 }

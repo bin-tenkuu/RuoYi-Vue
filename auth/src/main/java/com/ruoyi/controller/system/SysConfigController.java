@@ -5,7 +5,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.entity.SysConfig;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.model.R;
-import com.ruoyi.common.model.sysconfig.SysConfigQuery;
+import com.ruoyi.common.model.query.SysConfigQuery;
 import com.ruoyi.common.service.ISysConfigService;
 import com.ruoyi.common.util.SecurityUtils;
 import com.ruoyi.common.util.poi.ExcelUtils;

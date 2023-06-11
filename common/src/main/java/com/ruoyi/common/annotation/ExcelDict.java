@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(ExcelDicts.class)
 public @interface ExcelDict {
-    String key();
+    int key();
 
     String value();
 }

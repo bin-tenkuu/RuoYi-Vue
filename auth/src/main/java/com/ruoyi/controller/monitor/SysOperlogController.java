@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ruoyi.common.model.R;
-import com.ruoyi.common.model.sysoperlog.SysOperLogQuery;
+import com.ruoyi.common.model.query.SysOperLogQuery;
 import com.ruoyi.common.util.poi.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

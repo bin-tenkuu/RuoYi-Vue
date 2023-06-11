@@ -10,12 +10,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.ExcelDict;
-import com.ruoyi.common.util.poi.ExcelUtils;
+import com.ruoyi.common.util.poi.IntDictConverter;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 操作日志记录表 oper_log
@@ -47,24 +46,18 @@ public class SysOperLog {
      * 业务类型（0其它 1新增 2修改 3删除）
      */
     @TableField(value = "business_type")
-    @ExcelProperty(value = "业务类型", converter = ExcelUtils.DictConverter.class)
-    @ExcelDict(key = "0", value = "其它")
-    @ExcelDict(key = "1", value = "新增")
-    @ExcelDict(key = "2", value = "修改")
-    @ExcelDict(key = "3", value = "删除")
-    @ExcelDict(key = "4", value = "授权")
-    @ExcelDict(key = "5", value = "导出")
-    @ExcelDict(key = "6", value = "导入")
-    @ExcelDict(key = "7", value = "强退")
-    @ExcelDict(key = "8", value = "生成代码")
-    @ExcelDict(key = "9", value = "清空数据")
+    @ExcelProperty(value = "业务类型", converter = IntDictConverter.class)
+    @ExcelDict(key = 0, value = "其它")
+    @ExcelDict(key = 1, value = "新增")
+    @ExcelDict(key = 2, value = "修改")
+    @ExcelDict(key = 3, value = "删除")
+    @ExcelDict(key = 4, value = "授权")
+    @ExcelDict(key = 5, value = "导出")
+    @ExcelDict(key = 6, value = "导入")
+    @ExcelDict(key = 7, value = "强退")
+    @ExcelDict(key = 8, value = "生成代码")
+    @ExcelDict(key = 9, value = "清空数据")
     private Integer businessType;
-
-    /**
-     * 业务类型数组
-     */
-    @TableField(exist = false)
-    private Integer[] businessTypes;
 
     /**
      * 请求方法
@@ -133,9 +126,9 @@ public class SysOperLog {
      * 操作状态（0正常 1异常）
      */
     @TableField(value = "status")
-    @ExcelProperty(value = "状态", converter = ExcelUtils.DictConverter.class)
-    @ExcelDict(key = "0", value = "正常")
-    @ExcelDict(key = "1", value = "异常")
+    @ExcelProperty(value = "状态", converter = IntDictConverter.class)
+    @ExcelDict(key = 0, value = "正常")
+    @ExcelDict(key = 1, value = "异常")
     private Integer status;
 
     /**

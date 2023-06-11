@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ruoyi.common.model.R;
+import com.ruoyi.common.model.query.SysLogininforQuery;
 import com.ruoyi.common.util.poi.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,30 +37,29 @@ public class SysLogininforController {
 
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:list')")
     @GetMapping("/list")
-    public R list(SysLogininfor logininfor, IPage<SysLogininfor> page) {
-        List<SysLogininfor> list = logininforService.selectLogininforList(page, logininfor);
-        return R.ok().put("rows", list).put("total", page.getTotal());
+    public R<List<SysLogininfor>> list(SysLogininforQuery logininfor, IPage<SysLogininfor> page) {
+        return R.ok(logininforService.page(page, logininfor.toQuery()));
     }
 
     @Log(title = "登录日志", businessType = BusinessType.EXPORT)
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:export')")
     @PostMapping("/export")
-    public void export(HttpServletResponse response, SysLogininfor logininfor) {
-        List<SysLogininfor> list = logininforService.selectLogininforList(page, logininfor);
+    public void export(HttpServletResponse response, SysLogininforQuery logininfor) {
+        List<SysLogininfor> list = logininforService.list(logininfor.toQuery());
         ExcelUtils.writeExcel(response, list, "登录日志", "登录日志", SysLogininfor.class);
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:remove')")
     @Log(title = "登录日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{infoIds}")
-    public R remove(@PathVariable Long[] infoIds) {
-        return logininforService.deleteLogininforByIds(infoIds) > 0 ? R.ok() : R.fail();
+    public R<Boolean> remove(@PathVariable List<Long> infoIds) {
+        return R.ok(logininforService.removeByIds(infoIds));
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:remove')")
     @Log(title = "登录日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
-    public R clean() {
+    public R<?> clean() {
         logininforService.cleanLogininfor();
         return R.ok();
     }
@@ -67,7 +67,7 @@ public class SysLogininforController {
     @PreAuthorize("@ss.hasPermi('monitor:logininfor:unlock')")
     @Log(title = "账户解锁", businessType = BusinessType.OTHER)
     @GetMapping("/unlock/{userName}")
-    public R unlock(@PathVariable("userName") String userName) {
+    public R<?> unlock(@PathVariable("userName") String userName) {
         passwordService.clearLoginRecordCache(userName);
         return R.ok();
     }

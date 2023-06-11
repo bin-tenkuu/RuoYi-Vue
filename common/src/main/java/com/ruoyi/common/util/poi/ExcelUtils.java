@@ -45,9 +45,9 @@ public class ExcelUtils {
     /**
      * 向浏览器输出excel文件
      *
-     * @param response HttpServletResponse
+     * @param response  HttpServletResponse
      * @param sheetName 输出的文件名称 excel的名称
-     * @param clazz 输出数据的模板
+     * @param clazz     输出数据的模板
      */
     public static <T> void writeExcel(HttpServletResponse response, Class<T> clazz, String fileName, String sheetName) {
         writeExcel(response, Collections.emptyList(), fileName, sheetName, clazz);
@@ -56,13 +56,14 @@ public class ExcelUtils {
     /**
      * 向浏览器输出excel文件
      *
-     * @param response HttpServletResponse
-     * @param data 输出的数据
-     * @param fileName 输出的文件名称 excel的名称
+     * @param response  HttpServletResponse
+     * @param data      输出的数据
+     * @param fileName  输出的文件名称 excel的名称
      * @param sheetName 输出的excel的sheet的名称 也就是页的名称
-     * @param clazz 输出数据的模板
+     * @param clazz     输出数据的模板
      */
-    public static <T> void writeExcel(HttpServletResponse response, List<T> data, String fileName, String sheetName, Class<T> clazz) {
+    public static <T> void writeExcel(HttpServletResponse response, List<T> data, String fileName, String sheetName,
+            Class<T> clazz) {
         //表头样式
         WriteCellStyle headWriteCellStyle = new WriteCellStyle();
         //设置表头居中对齐
@@ -91,40 +92,4 @@ public class ExcelUtils {
         }
     }
 
-    public static class DictConverter implements Converter<String> {
-        @Override
-        public Class<?> supportJavaTypeKey() {
-            return String.class;
-        }
-
-        @Override
-        public CellDataTypeEnum supportExcelTypeKey() {
-            return CellDataTypeEnum.STRING;
-        }
-
-        @Override
-        public WriteCellData<?> convertToExcelData(String value, ExcelContentProperty contentProperty,
-                GlobalConfiguration globalConfiguration) {
-            val dicts = contentProperty.getField().getAnnotation(ExcelDicts.class);
-            for (ExcelDict dict : dicts.value()) {
-                if (dict.key().equals(value)) {
-                    return new WriteCellData<>(dict.value());
-                }
-            }
-            return new WriteCellData<>(dicts.defaultDict().value());
-        }
-
-        @Override
-        public String convertToJavaData(ReadCellData<?> cellData, ExcelContentProperty contentProperty,
-                GlobalConfiguration globalConfiguration) {
-            val dicts = contentProperty.getField().getAnnotation(ExcelDicts.class);
-            val stringValue = cellData.getStringValue();
-            for (ExcelDict dict : dicts.value()) {
-                if (dict.value().equals(stringValue)) {
-                    return dict.key();
-                }
-            }
-            return dicts.defaultDict().key();
-        }
-    }
 }

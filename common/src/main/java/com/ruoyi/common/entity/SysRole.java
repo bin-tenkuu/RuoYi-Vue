@@ -9,6 +9,7 @@ import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.ruoyi.common.annotation.ExcelDict;
+import com.ruoyi.common.util.poi.IntDictConverter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -36,7 +37,7 @@ public class SysRole extends BaseEntity {
      * 角色名称
      */
     @NotBlank(message = "角色名称不能为空")
-    @Size(min = 0, max = 30, message = "角色名称长度不能超过30个字符")
+    @Size(max = 30, message = "角色名称长度不能超过30个字符")
     @ExcelProperty(value = "角色名称")
     private String roleName;
 
@@ -44,7 +45,7 @@ public class SysRole extends BaseEntity {
      * 角色权限
      */
     @NotBlank(message = "权限字符不能为空")
-    @Size(min = 0, max = 100, message = "权限字符长度不能超过100个字符")
+    @Size(max = 100, message = "权限字符长度不能超过100个字符")
     @ExcelProperty(value = "角色权限")
     private String roleKey;
 
@@ -58,13 +59,13 @@ public class SysRole extends BaseEntity {
     /**
      * 数据范围（1：所有数据权限；2：自定义数据权限；3：本部门数据权限；4：本部门及以下数据权限；5：仅本人数据权限）
      */
-    @ExcelProperty(value = "数据范围")
-    @ExcelDict(key = "1", value = "所有数据权限")
-    @ExcelDict(key = "2", value = "自定义数据权限")
-    @ExcelDict(key = "3", value = "本部门数据权限")
-    @ExcelDict(key = "4", value = "本部门及以下数据权限")
-    @ExcelDict(key = "5", value = "仅本人数据权限")
-    private String dataScope;
+    @ExcelProperty(value = "数据范围", converter = IntDictConverter.class)
+    @ExcelDict(key = 1, value = "所有数据权限")
+    @ExcelDict(key = 2, value = "自定义数据权限")
+    @ExcelDict(key = 3, value = "本部门数据权限")
+    @ExcelDict(key = 4, value = "本部门及以下数据权限")
+    @ExcelDict(key = 5, value = "仅本人数据权限")
+    private Integer dataScope;
 
     /**
      * 菜单树选择项是否关联显示（ 0：父子不互相关联显示 1：父子互相关联显示）
@@ -79,15 +80,15 @@ public class SysRole extends BaseEntity {
     /**
      * 角色状态（0正常 1停用）
      */
-    @ExcelProperty(value = "角色状态")
-    @ExcelDict(key = "0", value = "正常")
-    @ExcelDict(key = "1", value = "停用")
-    private String status;
+    @ExcelProperty(value = "角色状态", converter = IntDictConverter.class)
+    @ExcelDict(key = 0, value = "正常")
+    @ExcelDict(key = 1, value = "停用")
+    private Integer status;
 
     /**
      * 删除标志（0代表存在 2代表删除）
      */
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 用户是否存在此角色标识 默认不存在

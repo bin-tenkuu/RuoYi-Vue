@@ -6,6 +6,7 @@ import com.alibaba.excel.annotation.format.DateTimeFormat;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.ruoyi.common.annotation.ExcelDict;
 import com.ruoyi.common.config.xss.Xss;
+import com.ruoyi.common.util.poi.IntDictConverter;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -45,7 +46,7 @@ public class SysUser extends BaseEntity {
      */
     @Xss(message = "用户账号不能包含脚本字符")
     @NotBlank(message = "用户账号不能为空")
-    @Size(min = 0, max = 30, message = "用户账号长度不能超过30个字符")
+    @Size(max = 30, message = "用户账号长度不能超过30个字符")
     @ExcelProperty(value = "登录名称")
     private String userName;
 
@@ -53,7 +54,7 @@ public class SysUser extends BaseEntity {
      * 用户昵称
      */
     @Xss(message = "用户昵称不能包含脚本字符")
-    @Size(min = 0, max = 30, message = "用户昵称长度不能超过30个字符")
+    @Size(max = 30, message = "用户昵称长度不能超过30个字符")
     @ExcelProperty(value = "用户名称")
     private String nickName;
 
@@ -61,25 +62,25 @@ public class SysUser extends BaseEntity {
      * 用户邮箱
      */
     @Email(message = "邮箱格式不正确")
-    @Size(min = 0, max = 50, message = "邮箱长度不能超过50个字符")
+    @Size(max = 50, message = "邮箱长度不能超过50个字符")
     @ExcelProperty(value = "用户邮箱")
     private String email;
 
     /**
      * 手机号码
      */
-    @Size(min = 0, max = 11, message = "手机号码长度不能超过11个字符")
+    @Size(max = 11, message = "手机号码长度不能超过11个字符")
     @ExcelProperty(value = "手机号码")
     private String phonenumber;
 
     /**
      * 用户性别
      */
-    @ExcelProperty(value = "用户性别")
-    @ExcelDict(key = "0", value = "男")
-    @ExcelDict(key = "1", value = "女")
-    @ExcelDict(key = "2", value = "未知")
-    private String sex;
+    @ExcelProperty(value = "用户性别", converter = IntDictConverter.class)
+    @ExcelDict(key = 0, value = "男")
+    @ExcelDict(key = 1, value = "女")
+    @ExcelDict(key = 2, value = "未知")
+    private Integer sex;
 
     /**
      * 用户头像
@@ -94,15 +95,15 @@ public class SysUser extends BaseEntity {
     /**
      * 帐号状态（0正常 1停用）
      */
-    @ExcelProperty(value = "帐号状态")
-    @ExcelDict(key = "0", value = "正常")
-    @ExcelDict(key = "1", value = "停用")
-    private String status;
+    @ExcelProperty(value = "帐号状态", converter = IntDictConverter.class)
+    @ExcelDict(key = 0, value = "正常")
+    @ExcelDict(key = 1, value = "停用")
+    private Integer status;
 
     /**
      * 删除标志（0代表存在 2代表删除）
      */
-    private String delFlag;
+    private Integer delFlag;
 
     /**
      * 最后登录IP
@@ -116,7 +117,7 @@ public class SysUser extends BaseEntity {
     @ExcelProperty(value = "最后登录时间")
     @ColumnWidth(30)
     @DateTimeFormat("yyyy-MM-dd HH:mm:ss")
-    private Date loginDate;
+    private LocalDateTime loginDate;
 
     /**
      * 部门对象

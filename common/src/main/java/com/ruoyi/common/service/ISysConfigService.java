@@ -1,11 +1,7 @@
 package com.ruoyi.common.service;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ruoyi.common.entity.SysConfig;
-import com.ruoyi.common.model.sysconfig.SysConfigQuery;
-import org.apache.poi.ss.formula.functions.T;
 
 /**
  * 参数配置 服务层
