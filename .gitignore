@@ -4,7 +4,7 @@
 .gradle
 /build/
 !gradle/wrapper/gradle-wrapper.jar
-
+/logs
 target/
 !.mvn/wrapper/maven-wrapper.jar
 

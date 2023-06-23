@@ -1,7 +1,6 @@
 package com.ruoyi.common.exception.file;
 
 import com.ruoyi.common.exception.ResultException;
-import com.ruoyi.common.util.MessageUtils;
 
 /**
  * 文件名大小限制异常类

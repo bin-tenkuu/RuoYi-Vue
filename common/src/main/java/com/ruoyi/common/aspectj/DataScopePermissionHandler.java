@@ -1,5 +1,7 @@
 package com.ruoyi.common.aspectj;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
 import com.ruoyi.common.annotation.DataScope;
 import com.ruoyi.common.entity.SysRole;
@@ -102,9 +104,8 @@ public class DataScopePermissionHandler implements DataPermissionHandler {
             if (DATA_SCOPE_CUSTOM != dataScope && conditions.contains(dataScope)) {
                 continue;
             }
-            if (StringUtils.isNotEmpty(permission)
-                    && StringUtils.isNotEmpty(role.getPermissions())
-                    && !StringUtils.containsAny(role.getPermissions(), permission.split(","))) {
+            if (StrUtil.isNotEmpty(permission) && CollUtil.isNotEmpty(role.getPermissions())
+                    && !role.getPermissions().contains(permission)) {
                 continue;
             }
             if (DATA_SCOPE_ALL == dataScope) {

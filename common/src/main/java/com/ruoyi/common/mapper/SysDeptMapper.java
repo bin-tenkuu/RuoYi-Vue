@@ -2,6 +2,7 @@ package com.ruoyi.common.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import com.ruoyi.common.entity.SysDept;
 
@@ -10,7 +11,7 @@ import com.ruoyi.common.entity.SysDept;
  *
  * @author ruoyi
  */
-public interface SysDeptMapper {
+public interface SysDeptMapper extends BaseMapper<SysDept> {
     /**
      * 查询部门管理数据
      *
@@ -75,23 +76,7 @@ public interface SysDeptMapper {
      * @param parentId 父部门ID
      * @return 结果
      */
-    SysDept checkDeptNameUnique(@Param("deptName") String deptName, @Param("parentId") Long parentId);
-
-    /**
-     * 新增部门信息
-     *
-     * @param dept 部门信息
-     * @return 结果
-     */
-    int insertDept(SysDept dept);
-
-    /**
-     * 修改部门信息
-     *
-     * @param dept 部门信息
-     * @return 结果
-     */
-    int updateDept(SysDept dept);
+    Long checkDeptNameUnique(@Param("deptName") String deptName, @Param("parentId") Long parentId);
 
     /**
      * 修改所在部门正常状态
@@ -108,11 +93,4 @@ public interface SysDeptMapper {
      */
     int updateDeptChildren(@Param("depts") List<SysDept> depts);
 
-    /**
-     * 删除部门管理信息
-     *
-     * @param deptId 部门ID
-     * @return 结果
-     */
-    int deleteDeptById(Long deptId);
 }

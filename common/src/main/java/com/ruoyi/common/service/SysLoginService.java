@@ -6,7 +6,6 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.entity.SysUser;
 import com.ruoyi.common.model.login.LoginUser;
 import com.ruoyi.common.exception.user.*;
-import com.ruoyi.common.util.DateUtil;
 import com.ruoyi.common.util.StringUtils;
 import com.ruoyi.common.util.ip.IpUtils;
 import com.ruoyi.common.manager.AsyncManager;
@@ -132,7 +131,7 @@ public class SysLoginService {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(userId);
         sysUser.setLoginIp(IpUtils.getIpAddr());
-        sysUser.setLoginDate(DateUtil.toDate(LocalDateTime.now()));
+        sysUser.setLoginDate(LocalDateTime.now());
         userService.updateUserProfile(sysUser);
     }
 }

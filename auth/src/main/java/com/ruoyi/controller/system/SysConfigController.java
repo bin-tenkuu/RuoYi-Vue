@@ -34,7 +34,7 @@ public class SysConfigController {
     @PreAuthorize("@ss.hasPermi('system:config:list')")
     @GetMapping("/list")
     public R<List<SysConfig>> list(SysConfigQuery config, IPage<SysConfig> page) {
-       return R.ok(configService.page(page, config.toQuery()));
+        return R.ok(configService.page(page, config.toQuery()));
     }
 
     @Log(title = "参数管理", businessType = BusinessType.EXPORT)
@@ -58,7 +58,7 @@ public class SysConfigController {
      * 根据参数键名查询参数值
      */
     @GetMapping(value = "/configKey/{configKey}")
-    public R<?> getConfigKey(@PathVariable String configKey) {
+    public R<String> getConfigKey(@PathVariable String configKey) {
         String data = configService.selectConfigByKey(configKey);
         return R.ok(data);
     }
@@ -69,12 +69,12 @@ public class SysConfigController {
     @PreAuthorize("@ss.hasPermi('system:config:add')")
     @Log(title = "参数管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<?> add(@RequestBody @Valid SysConfig config) {
+    public R<Boolean> add(@RequestBody @Valid SysConfig config) {
         if (!configService.checkConfigKeyUnique(config)) {
             return R.fail("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
         config.setCreateBy(SecurityUtils.getLoginUser().getUsername());
-        return configService.insertConfig(config) > 0 ? R.ok() : R.fail();
+        return R.ok(configService.insertConfig(config) > 0);
     }
 
     /**
@@ -83,12 +83,12 @@ public class SysConfigController {
     @PreAuthorize("@ss.hasPermi('system:config:edit')")
     @Log(title = "参数管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<?> edit(@RequestBody @Valid SysConfig config) {
+    public R<Boolean> edit(@RequestBody @Valid SysConfig config) {
         if (!configService.checkConfigKeyUnique(config)) {
             return R.fail("修改参数'" + config.getConfigName() + "'失败，参数键名已存在");
         }
         config.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return configService.updateConfig(config) > 0 ? R.ok() : R.fail();
+        return R.ok(configService.updateConfig(config) > 0);
     }
 
     /**
@@ -97,9 +97,9 @@ public class SysConfigController {
     @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{configIds}")
-    public R<?> remove(@PathVariable Long[] configIds) {
+    public R<Boolean> remove(@PathVariable Long[] configIds) {
         configService.deleteConfigByIds(configIds);
-        return R.ok();
+        return R.ok(true);
     }
 
     /**
@@ -108,8 +108,8 @@ public class SysConfigController {
     @PreAuthorize("@ss.hasPermi('system:config:remove')")
     @Log(title = "参数管理", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
-    public R<?> refreshCache() {
+    public R<Boolean> refreshCache() {
         configService.resetConfigCache();
-        return R.ok();
+        return R.ok(true);
     }
 }

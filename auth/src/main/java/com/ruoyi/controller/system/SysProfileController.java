@@ -1,5 +1,6 @@
 package com.ruoyi.controller.system;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.entity.SysUser;
@@ -10,7 +11,6 @@ import com.ruoyi.common.service.ISysUserService;
 import com.ruoyi.common.service.SysPasswordService;
 import com.ruoyi.common.service.TokenService;
 import com.ruoyi.common.util.SecurityUtils;
-import com.ruoyi.common.util.StringUtils;
 import com.ruoyi.common.util.file.FileUploadUtils;
 import com.ruoyi.common.util.file.MimeTypeUtils;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +36,10 @@ public class SysProfileController {
      * 个人信息
      */
     @GetMapping
-    public R<?> profile() {
+    public R<SysUser> profile() {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser user = loginUser.getUser();
-        R<?> ajax = R.ok((Object) user);
+        R<SysUser> ajax = R.ok(user);
         ajax.put("roleGroup", userService.selectUserRoleGroup(loginUser.getUsername()));
         ajax.put("postGroup", userService.selectUserPostGroup(loginUser.getUsername()));
         return ajax;
@@ -50,14 +50,14 @@ public class SysProfileController {
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<?> updateProfile(@RequestBody SysUser user) {
+    public R<String> updateProfile(@RequestBody SysUser user) {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         SysUser sysUser = loginUser.getUser();
         user.setUserName(sysUser.getUserName());
-        if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
+        if (StrUtil.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
         }
-        if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
+        if (StrUtil.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setUserId(sysUser.getUserId());
@@ -81,7 +81,7 @@ public class SysProfileController {
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
-    public R<?> updatePwd(String oldPassword, String newPassword) {
+    public R<String> updatePwd(String oldPassword, String newPassword) {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         String userName = loginUser.getUsername();
         String password = loginUser.getPassword();
@@ -105,12 +105,12 @@ public class SysProfileController {
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
-    public R<?> avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception {
+    public R<String> avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception {
         if (!file.isEmpty()) {
             LoginUser loginUser = SecurityUtils.getLoginUser();
             String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
-                R<?> ajax = R.ok();
+                R<String> ajax = R.ok();
                 ajax.put("imgUrl", avatar);
                 // 更新缓存用户头像
                 loginUser.getUser().setAvatar(avatar);

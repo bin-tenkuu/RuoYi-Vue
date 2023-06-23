@@ -12,10 +12,10 @@ import javax.validation.Validator;
  */
 public class BeanValidators
 {
-    public static void validateWithException(Validator validator, Object object, Class<?>... groups)
+    public static void validateWithException(Validator validator, Object object)
             throws ConstraintViolationException
     {
-        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object, groups);
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(object);
         if (!constraintViolations.isEmpty())
         {
             throw new ConstraintViolationException(constraintViolations);

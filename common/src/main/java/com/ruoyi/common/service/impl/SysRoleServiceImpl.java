@@ -1,11 +1,8 @@
 package com.ruoyi.common.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.exception.ResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.entity.SysRole;
 import com.ruoyi.common.entity.SysUser;
 import com.ruoyi.common.util.SecurityUtils;
-import com.ruoyi.common.util.StringUtils;
-import com.ruoyi.common.util.spring.SpringUtils;
 import com.ruoyi.common.entity.SysRoleDept;
 import com.ruoyi.common.entity.SysRoleMenu;
 import com.ruoyi.common.entity.SysUserRole;
@@ -110,7 +105,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @Override
     public List<SysRole> selectRoleAll()
     {
-        return SpringUtils.getAopProxy(this).selectRoleList(new SysRole());
+        return selectRoleList(new SysRole());
     }
 
     /**
@@ -199,8 +194,8 @@ public class SysRoleServiceImpl implements ISysRoleService
         {
             SysRole role = new SysRole();
             role.setRoleId(roleId);
-            List<SysRole> roles = SpringUtils.getAopProxy(this).selectRoleList(role);
-            if (StringUtils.isEmpty(roles))
+            List<SysRole> roles = selectRoleList(role);
+            if (CollUtil.isEmpty(roles))
             {
                 throw new ResultException("没有权限访问角色数据！");
             }

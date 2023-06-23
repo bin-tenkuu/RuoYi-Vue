@@ -1,5 +1,6 @@
 package com.ruoyi.common.aspectj;
 
+import cn.hutool.core.map.MapUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.config.GlobalInstance;
 import com.ruoyi.common.model.login.LoginUser;
@@ -145,7 +146,7 @@ public class LogAspect {
     private void setRequestValue(JoinPoint joinPoint, SysOperLog operLog) {
         Map<?, ?> paramsMap = ServletUtils.getParamMap(ServletUtils.getRequest());
         String requestMethod = operLog.getRequestMethod();
-        if (StringUtils.isEmpty(paramsMap)
+        if (MapUtil.isEmpty(paramsMap)
                 && (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod))) {
             String params = argsArrayToString(joinPoint.getArgs());
             operLog.setOperParam(StringUtils.substring(params, 0, 2000));

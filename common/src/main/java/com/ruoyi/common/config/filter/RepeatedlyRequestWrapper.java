@@ -1,16 +1,14 @@
 package com.ruoyi.common.config.filter;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import cn.hutool.extra.servlet.ServletUtil;
+
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-
-import com.ruoyi.common.util.http.HttpHelper;
-import com.ruoyi.common.constant.Constants;
-import org.apache.ibatis.javassist.bytecode.ByteArray;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * 构建可重复读取inputStream的request
@@ -22,10 +20,10 @@ public class RepeatedlyRequestWrapper extends HttpServletRequestWrapper {
 
     public RepeatedlyRequestWrapper(HttpServletRequest request, ServletResponse response) throws IOException {
         super(request);
-        request.setCharacterEncoding(Constants.UTF8);
-        response.setCharacterEncoding(Constants.UTF8);
+        request.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
+        response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());
 
-        body = HttpHelper.getBodyString(request).getBytes(StandardCharsets.UTF_8);
+        body = ServletUtil.getBody(request).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override

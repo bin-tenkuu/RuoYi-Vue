@@ -3,6 +3,7 @@ package com.ruoyi.controller.monitor;
 import java.util.*;
 
 import com.ruoyi.common.model.R;
+import com.ruoyi.common.util.StringUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.constant.CacheConstants;
-import com.ruoyi.common.util.StringUtils;
 
 /**
  * 缓存监控
@@ -47,7 +47,8 @@ public class CacheController {
     @GetMapping()
     public R<Map<String, Object>> getInfo() throws Exception {
         Properties info = redisTemplate.execute((RedisCallback<Properties>) connection -> connection.info());
-        Properties commandStats = redisTemplate.execute((RedisCallback<Properties>) connection -> connection.info("commandstats"));
+        Properties commandStats =
+                redisTemplate.execute((RedisCallback<Properties>) connection -> connection.info("commandstats"));
         Long dbSize = redisTemplate.execute((RedisCallback<Long>) connection -> connection.dbSize());
 
         Map<String, Object> result = new HashMap<>(3);
@@ -90,25 +91,30 @@ public class CacheController {
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @DeleteMapping("/clearCacheName/{cacheName}")
-    public R<?> clearCacheName(@PathVariable String cacheName) {
+    public R<Boolean> clearCacheName(@PathVariable String cacheName) {
         Collection<String> cacheKeys = redisTemplate.keys(cacheName + "*");
-        redisTemplate.delete(cacheKeys);
-        return R.ok();
+        if (cacheKeys != null) {
+            redisTemplate.delete(cacheKeys);
+            return R.ok(true);
+        }
+        return R.ok(false);
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @DeleteMapping("/clearCacheKey/{cacheKey}")
-    public R<?> clearCacheKey(@PathVariable String cacheKey) {
-        redisTemplate.delete(cacheKey);
-        return R.ok();
+    public R<Boolean> clearCacheKey(@PathVariable String cacheKey) {
+        return R.ok(redisTemplate.delete(cacheKey));
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @DeleteMapping("/clearCacheAll")
-    public R<?> clearCacheAll() {
+    public R<Boolean> clearCacheAll() {
         Collection<String> cacheKeys = redisTemplate.keys("*");
-        redisTemplate.delete(cacheKeys);
-        return R.ok();
+        if (cacheKeys != null) {
+            redisTemplate.delete(cacheKeys);
+            return R.ok(true);
+        }
+        return R.ok(false);
     }
 
     @Getter

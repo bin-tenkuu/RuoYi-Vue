@@ -11,7 +11,6 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.user.UserPasswordNotMatchException;
 import com.ruoyi.common.exception.user.UserPasswordRetryLimitExceedException;
-import com.ruoyi.common.util.MessageUtils;
 import com.ruoyi.common.manager.AsyncManager;
 import com.ruoyi.common.manager.AsyncFactory;
 
@@ -55,14 +54,14 @@ public class SysPasswordService {
 
         if (retryCount >= maxRetryCount) {
             AsyncManager.execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL,
-                    MessageUtils.message("密码输入错误{0}次，帐户锁定{1}分钟", maxRetryCount, lockTime)));
+                    String.format("密码输入错误%s次，帐户锁定%s分钟", maxRetryCount, lockTime)));
             throw new UserPasswordRetryLimitExceedException(maxRetryCount, lockTime);
         }
 
         if (!matches(password, user.getPassword())) {
             retryCount = retryCount + 1;
             AsyncManager.execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL,
-                    MessageUtils.message("密码输入错误{0}次", retryCount)));
+                    String.format("密码输入错误%s次", retryCount)));
             redisService.setValue(getCacheKey(username), retryCount, Duration.ofMinutes(lockTime));
             throw new UserPasswordNotMatchException();
         } else {

@@ -1,7 +1,9 @@
 package com.ruoyi.controller.common;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.exception.ResultException;
 import com.ruoyi.common.model.R;
 import com.ruoyi.common.util.ServletUtils;
 import com.ruoyi.common.util.StringUtils;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class CommonController {
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response) {
         try {
             if (!FileUtils.checkAllowDownload(fileName)) {
-                throw new Exception(StringUtils.format("文件名称({})非法，不允许下载。 ", fileName));
+                throw new ResultException(StrUtil.format("文件名称({})非法，不允许下载。 ", fileName));
             }
             String realFileName = System.currentTimeMillis() + fileName.substring(fileName.indexOf("_") + 1);
             String filePath = RuoYiConfig.getDownloadPath() + fileName;
@@ -61,13 +64,13 @@ public class CommonController {
      * 通用上传请求（单个）
      */
     @PostMapping("/upload")
-    public R<?> uploadFile(MultipartFile file) {
+    public R<?> uploadFile(MultipartFile file, HttpServletRequest request) {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
             // 上传并返回新文件名称
             String fileName = FileUploadUtils.upload(filePath, file);
-            String url = ServletUtils.getUrl() + fileName;
+            String url = ServletUtils.getUrl(request) + fileName;
             R<?> ajax = R.ok();
             ajax.put("url", url);
             ajax.put("fileName", fileName);
@@ -84,7 +87,7 @@ public class CommonController {
      * 通用上传请求（多个）
      */
     @PostMapping("/uploads")
-    public R<?> uploadFiles(List<MultipartFile> files) {
+    public R<?> uploadFiles(List<MultipartFile> files, HttpServletRequest request) {
         try {
             // 上传文件路径
             String filePath = RuoYiConfig.getUploadPath();
@@ -95,7 +98,7 @@ public class CommonController {
             for (MultipartFile file : files) {
                 // 上传并返回新文件名称
                 String fileName = FileUploadUtils.upload(filePath, file);
-                String url = ServletUtils.getUrl() + fileName;
+                String url = ServletUtils.getUrl(request) + fileName;
                 urls.add(url);
                 fileNames.add(fileName);
                 newFileNames.add(FileUtils.getName(fileName));
@@ -120,7 +123,7 @@ public class CommonController {
     public void resourceDownload(String resource, HttpServletResponse response) {
         try {
             if (!FileUtils.checkAllowDownload(resource)) {
-                throw new Exception(StringUtils.format("资源文件({})非法，不允许下载。 ", resource));
+                throw new Exception(StrUtil.format("资源文件({})非法，不允许下载。 ", resource));
             }
             // 本地资源路径
             String localPath = RuoYiConfig.getProfile();

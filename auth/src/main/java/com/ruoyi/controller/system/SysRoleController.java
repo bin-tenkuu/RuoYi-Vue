@@ -3,7 +3,6 @@ package com.ruoyi.controller.system;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.model.R;
 import com.ruoyi.common.util.poi.ExcelUtils;
 import com.ruoyi.common.util.SecurityUtils;
@@ -101,7 +100,7 @@ public class SysRoleController {
             return R.fail("新增角色'" + role.getRoleName() + "'失败，角色权限已存在");
         }
         role.setCreateBy(SecurityUtils.getLoginUser().getUsername());
-        return roleService.insertRole(role) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.insertRole(role) > 0);
 
     }
 
@@ -151,7 +150,7 @@ public class SysRoleController {
     {
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
-        return roleService.authDataScope(role) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.authDataScope(role) > 0);
     }
 
     /**
@@ -165,7 +164,7 @@ public class SysRoleController {
         roleService.checkRoleAllowed(role);
         roleService.checkRoleDataScope(role.getRoleId());
         role.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return roleService.updateRoleStatus(role) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.updateRoleStatus(role) > 0);
     }
 
     /**
@@ -176,7 +175,7 @@ public class SysRoleController {
     @DeleteMapping("/{roleIds}")
     public R remove(@PathVariable Long[] roleIds)
     {
-        return roleService.deleteRoleByIds(roleIds) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.deleteRoleByIds(roleIds) > 0);
     }
 
     /**
@@ -222,7 +221,7 @@ public class SysRoleController {
     @PutMapping("/authUser/cancel")
     public R cancelAuthUser(@RequestBody SysUserRole userRole)
     {
-        return roleService.deleteAuthUser(userRole) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.deleteAuthUser(userRole) > 0);
     }
 
     /**
@@ -233,7 +232,7 @@ public class SysRoleController {
     @PutMapping("/authUser/cancelAll")
     public R cancelAuthUserAll(Long roleId, Long[] userIds)
     {
-        return roleService.deleteAuthUsers(roleId, userIds) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.deleteAuthUsers(roleId, userIds) > 0);
     }
 
     /**
@@ -245,7 +244,7 @@ public class SysRoleController {
     public R selectAuthUserAll(Long roleId, Long[] userIds)
     {
         roleService.checkRoleDataScope(roleId);
-        return roleService.insertAuthUsers(roleId, userIds) > 0 ? R.ok() : R.fail();
+        return R.ok(roleService.insertAuthUsers(roleId, userIds) > 0);
     }
 
     /**

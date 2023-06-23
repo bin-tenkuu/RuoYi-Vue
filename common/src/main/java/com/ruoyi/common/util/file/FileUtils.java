@@ -1,6 +1,6 @@
 package com.ruoyi.common.util.file;
 
-import com.ruoyi.common.util.StringUtils;
+import cn.hutool.core.util.StrUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -46,11 +46,10 @@ public class FileUtils {
      * @param filePath 文件
      */
     public static void deleteFile(String filePath) {
-        boolean flag = false;
         File file = new File(filePath);
         // 路径为文件且不为空则进行删除
         if (file.isFile() && file.exists()) {
-            flag = file.delete();
+            file.delete();
         }
     }
 
@@ -62,12 +61,12 @@ public class FileUtils {
      */
     public static boolean checkAllowDownload(String resource) {
         // 禁止目录上跳级别
-        if (StringUtils.contains(resource, "..")) {
+        if (StrUtil.contains(resource, "..")) {
             return false;
         }
 
         // 检查允许下载的文件规则
-        if (ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, FileTypeUtils.getFileType(resource))) {
+        if (ArrayUtils.contains(MimeTypeUtils.DEFAULT_ALLOWED_EXTENSION, StrUtil.subAfter(resource, '.', true))) {
             return true;
         }
 

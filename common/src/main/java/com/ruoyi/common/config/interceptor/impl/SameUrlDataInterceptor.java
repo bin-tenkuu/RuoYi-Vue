@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.extra.servlet.ServletUtil;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.config.GlobalInstance;
 import com.ruoyi.common.config.interceptor.RepeatSubmitInterceptor;
@@ -19,9 +20,7 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.service.RedisService;
 import com.ruoyi.common.config.filter.RepeatedlyRequestWrapper;
 import com.ruoyi.common.util.StringUtils;
-import com.ruoyi.common.util.http.HttpHelper;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * 判断请求url和数据是否和上一次相同，
@@ -60,12 +59,13 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
         return true;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit annotation) {
         String nowParams = "";
         if (request instanceof RepeatedlyRequestWrapper) {
             RepeatedlyRequestWrapper repeatedlyRequest = (RepeatedlyRequestWrapper) request;
-            nowParams = HttpHelper.getBodyString(repeatedlyRequest);
+            nowParams = ServletUtil.getBody(repeatedlyRequest);
         }
 
         // body参数为空，获取Parameter的数据

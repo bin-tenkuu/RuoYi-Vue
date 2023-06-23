@@ -16,26 +16,6 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "ruoyi")
 public class RuoYiConfig {
     /**
-     * 项目名称
-     */
-    private String name;
-
-    /**
-     * 版本
-     */
-    private String version;
-
-    /**
-     * 版权年份
-     */
-    private String copyrightYear;
-
-    /**
-     * 实例演示开关
-     */
-    private boolean demoEnabled;
-
-    /**
      * 上传路径
      */
     @Getter
@@ -63,13 +43,6 @@ public class RuoYiConfig {
 
     public void setCaptchaType(String captchaType) {
         RuoYiConfig.captchaType = captchaType;
-    }
-
-    /**
-     * 获取导入上传路径
-     */
-    public static String getImportPath() {
-        return getProfile() + "/import";
     }
 
     /**

@@ -1,7 +1,5 @@
 package com.ruoyi.common.util.ip;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import javax.servlet.http.HttpServletRequest;
 import com.ruoyi.common.util.ServletUtils;
 import com.ruoyi.common.util.StringUtils;
@@ -27,6 +25,7 @@ public class IpUtils
      */
     public static String getIpAddr()
     {
+
         return getIpAddr(ServletUtils.getRequest());
     }
 
@@ -210,40 +209,6 @@ public class IpUtils
     }
 
     /**
-     * 获取IP地址
-     * 
-     * @return 本地IP地址
-     */
-    public static String getHostIp()
-    {
-        try
-        {
-            return InetAddress.getLocalHost().getHostAddress();
-        }
-        catch (UnknownHostException e)
-        {
-        }
-        return "127.0.0.1";
-    }
-
-    /**
-     * 获取主机名
-     * 
-     * @return 本地主机名
-     */
-    public static String getHostName()
-    {
-        try
-        {
-            return InetAddress.getLocalHost().getHostName();
-        }
-        catch (UnknownHostException e)
-        {
-        }
-        return "未知";
-    }
-
-    /**
      * 从多级反向代理中获得第一个非unknown IP地址
      *
      * @param ip 获得的IP地址
@@ -302,7 +267,7 @@ public class IpUtils
         String[] s1 = ipWildCard.split("\\.");
         String[] s2 = ip.split("\\.");
         boolean isMatchedSeg = true;
-        for (int i = 0; i < s1.length && !s1[i].equals("*"); i++)
+        for (int i = 0; i < s1.length && !"*".equals(s1[i]); i++)
         {
             if (!s1[i].equals(s2[i]))
             {

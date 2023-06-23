@@ -5,11 +5,11 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.hutool.core.util.StrUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import com.ruoyi.common.util.StringUtils;
 
 /**
  * 认证失败处理类 返回未授权
@@ -22,7 +22,8 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, S
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
             throws IOException {
-        String msg = StringUtils.format("请求访问：{}，认证失败，无法访问系统资源", request.getRequestURI());
+        Object[] params = new Object[]{request.getRequestURI()};
+        String msg = StrUtil.format("请求访问：{}，认证失败，无法访问系统资源", params);
         response.sendError(HttpStatus.UNAUTHORIZED.value(), msg);
     }
 }

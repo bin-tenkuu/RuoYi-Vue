@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ruoyi.common.model.R;
 import com.ruoyi.common.util.SecurityUtils;
+import com.ruoyi.common.util.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,12 +21,11 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.entity.SysDept;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.util.StringUtils;
 import com.ruoyi.common.service.ISysDeptService;
 
 /**
  * 部门信息
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -39,8 +39,7 @@ public class SysDeptController {
      */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list")
-    public R list(SysDept dept)
-    {
+    public R<List<SysDept>> list(SysDept dept) {
         List<SysDept> depts = deptService.selectDeptList(dept);
         return R.ok(depts);
     }
@@ -50,8 +49,7 @@ public class SysDeptController {
      */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list/exclude/{deptId}")
-    public R excludeChild(@PathVariable(value = "deptId", required = false) Long deptId)
-    {
+    public R<List<SysDept>> excludeChild(@PathVariable(value = "deptId", required = false) Long deptId) {
         List<SysDept> depts = deptService.selectDeptList(new SysDept());
         depts.removeIf(d -> d.getDeptId().intValue() == deptId || ArrayUtils.contains(StringUtils.split(d.getAncestors(), ","), deptId + ""));
         return R.ok(depts);
@@ -62,8 +60,7 @@ public class SysDeptController {
      */
     @PreAuthorize("@ss.hasPermi('system:dept:query')")
     @GetMapping(value = "/{deptId}")
-    public R getInfo(@PathVariable Long deptId)
-    {
+    public R<SysDept> getInfo(@PathVariable Long deptId) {
         deptService.checkDeptDataScope(deptId);
         SysDept data = deptService.selectDeptById(deptId);
         return R.ok(data);
@@ -75,15 +72,13 @@ public class SysDeptController {
     @PreAuthorize("@ss.hasPermi('system:dept:add')")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @PostMapping
-    public R add(@Validated @RequestBody SysDept dept)
-    {
-        if (!deptService.checkDeptNameUnique(dept))
-        {
+    public R<Boolean> add(@Validated @RequestBody SysDept dept) {
+        if (!deptService.checkDeptNameUnique(dept)) {
             String message = "新增部门'" + dept.getDeptName() + "'失败，部门名称已存在";
             return R.fail(message);
         }
         dept.setCreateBy(SecurityUtils.getLoginUser().getUsername());
-        return deptService.insertDept(dept) > 0 ? R.ok() : R.fail();
+        return R.ok(deptService.insertDept(dept) > 0);
     }
 
     /**
@@ -92,26 +87,20 @@ public class SysDeptController {
     @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R edit(@Validated @RequestBody SysDept dept)
-    {
+    public R<Boolean> edit(@Validated @RequestBody SysDept dept) {
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
-        if (!deptService.checkDeptNameUnique(dept))
-        {
+        if (!deptService.checkDeptNameUnique(dept)) {
             String message = "修改部门'" + dept.getDeptName() + "'失败，部门名称已存在";
             return R.fail(message);
-        }
-        else if (dept.getParentId().equals(deptId))
-        {
+        } else if (dept.getParentId().equals(deptId)) {
             String message = "修改部门'" + dept.getDeptName() + "'失败，上级部门不能是自己";
             return R.fail(message);
-        }
-        else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0)
-        {
+        } else if (StringUtils.equals(UserConstants.DEPT_DISABLE, dept.getStatus()) && deptService.selectNormalChildrenDeptById(deptId) > 0) {
             return R.fail("该部门包含未停用的子部门！");
         }
         dept.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return deptService.updateDept(dept) > 0 ? R.ok() : R.fail();
+        return R.ok(deptService.updateDept(dept) > 0);
     }
 
     /**
@@ -120,17 +109,14 @@ public class SysDeptController {
     @PreAuthorize("@ss.hasPermi('system:dept:remove')")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptId}")
-    public R remove(@PathVariable Long deptId)
-    {
-        if (deptService.hasChildByDeptId(deptId))
-        {
+    public R<Boolean> remove(@PathVariable Long deptId) {
+        if (deptService.hasChildByDeptId(deptId)) {
             return R.fail("存在下级部门,不允许删除");
         }
-        if (deptService.checkDeptExistUser(deptId))
-        {
+        if (deptService.checkDeptExistUser(deptId)) {
             return R.fail("部门存在用户,不允许删除");
         }
         deptService.checkDeptDataScope(deptId);
-        return deptService.deleteDeptById(deptId) > 0 ? R.ok() : R.fail();
+        return R.ok(deptService.deleteDeptById(deptId) > 0);
     }
 }

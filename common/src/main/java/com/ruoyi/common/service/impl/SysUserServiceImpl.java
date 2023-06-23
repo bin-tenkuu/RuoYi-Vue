@@ -1,5 +1,8 @@
 package com.ruoyi.common.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.entity.*;
 import com.ruoyi.common.exception.ResultException;
 import com.ruoyi.common.mapper.*;
@@ -7,9 +10,7 @@ import com.ruoyi.common.service.ISysConfigService;
 import com.ruoyi.common.service.ISysUserService;
 import com.ruoyi.common.service.SysPasswordService;
 import com.ruoyi.common.util.SecurityUtils;
-import com.ruoyi.common.util.StringUtils;
 import com.ruoyi.common.util.bean.BeanValidators;
-import com.ruoyi.common.util.spring.SpringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -119,7 +120,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public String selectUserRoleGroup(String userName) {
         List<SysRole> list = roleMapper.selectRolesByUserName(userName);
         if (CollectionUtils.isEmpty(list)) {
-            return StringUtils.EMPTY;
+            return StrUtil.EMPTY;
         }
         return list.stream().map(SysRole::getRoleName).collect(Collectors.joining(","));
     }
@@ -207,8 +208,8 @@ public class SysUserServiceImpl implements ISysUserService {
         if (!SysUser.isAdmin(SecurityUtils.getUserId())) {
             SysUser user = new SysUser();
             user.setUserId(userId);
-            List<SysUser> users = SpringUtils.getAopProxy(this).selectUserList(user);
-            if (StringUtils.isEmpty(users)) {
+            List<SysUser> users = selectUserList(user);
+            if (CollUtil.isEmpty(users)) {
                 throw new ResultException("没有权限访问用户数据！");
             }
         }
@@ -350,7 +351,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     public void insertUserPost(SysUser user) {
         Long[] posts = user.getPostIds();
-        if (StringUtils.isNotEmpty(posts)) {
+        if (ArrayUtil.isNotEmpty((Object[]) posts)) {
             // 新增用户与岗位管理
             List<SysUserPost> list = new ArrayList<SysUserPost>(posts.length);
             for (Long postId : posts) {
@@ -370,7 +371,7 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param roleIds 角色组
      */
     public void insertUserRole(Long userId, Long[] roleIds) {
-        if (StringUtils.isNotEmpty(roleIds)) {
+        if (ArrayUtil.isNotEmpty((Object[]) roleIds)) {
             // 新增用户与角色管理
             List<SysUserRole> list = new ArrayList<SysUserRole>(roleIds.length);
             for (Long roleId : roleIds) {

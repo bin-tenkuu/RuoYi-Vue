@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.pagehelper.PageInfo;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.model.TreeSelect;
 import com.ruoyi.common.model.R;
 import com.ruoyi.common.util.poi.ExcelUtils;
@@ -29,7 +29,7 @@ import com.ruoyi.common.entity.SysRole;
 import com.ruoyi.common.entity.SysUser;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.util.SecurityUtils;
-import com.ruoyi.common.util.StringUtils;
+import com.ruoyi.common.util.StrUtil;
 import com.ruoyi.common.service.ISysDeptService;
 import com.ruoyi.common.service.ISysPostService;
 import com.ruoyi.common.service.ISysRoleService;
@@ -121,14 +121,14 @@ public class SysUserController {
     public R<?> add(@Validated @RequestBody SysUser user) {
         if (!userService.checkUserNameUnique(user)) {
             return R.fail("新增用户'" + user.getUserName() + "'失败，登录账号已存在");
-        } else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
+        } else if (StrUtil.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
             return R.fail("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
-        } else if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
+        } else if (StrUtil.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
             return R.fail("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setCreateBy(SecurityUtils.getLoginUser().getUsername());
         user.setPassword(passwordService.encode(user.getPassword()));
-        return userService.insertUser(user) > 0 ? R.ok() : R.fail();
+        return R.ok(userService.insertUser(user) > 0);
     }
 
     /**
@@ -142,13 +142,13 @@ public class SysUserController {
         userService.checkUserDataScope(user.getUserId());
         if (!userService.checkUserNameUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，登录账号已存在");
-        } else if (StringUtils.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
+        } else if (StrUtil.isNotEmpty(user.getPhonenumber()) && !userService.checkPhoneUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
-        } else if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
+        } else if (StrUtil.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
             return R.fail("修改用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
         user.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return userService.updateUser(user) > 0 ? R.ok() : R.fail();
+        return R.ok(userService.updateUser(user) > 0);
     }
 
     /**
@@ -161,7 +161,7 @@ public class SysUserController {
         if (ArrayUtils.contains(userIds, SecurityUtils.getLoginUser().getUserId())) {
             return R.fail("当前用户不能删除");
         }
-        return userService.deleteUserByIds(userIds) > 0 ? R.ok() : R.fail();
+        return R.ok(userService.deleteUserByIds(userIds) > 0);
     }
 
     /**
@@ -175,7 +175,7 @@ public class SysUserController {
         userService.checkUserDataScope(user.getUserId());
         user.setPassword(passwordService.encode(user.getPassword()));
         user.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return userService.resetPwd(user) > 0 ? R.ok() : R.fail();
+        return R.ok(userService.resetPwd(user) > 0);
     }
 
     /**
@@ -188,7 +188,7 @@ public class SysUserController {
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
         user.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return userService.updateUserStatus(user) > 0 ? R.ok() : R.fail();
+        return R.ok(userService.updateUserStatus(user) > 0);
     }
 
     /**

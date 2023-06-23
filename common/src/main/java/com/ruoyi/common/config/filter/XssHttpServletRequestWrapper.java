@@ -8,11 +8,11 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import com.ruoyi.common.util.html.HTMLFilter;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import com.ruoyi.common.util.StringUtils;
-import com.ruoyi.common.util.html.EscapeUtil;
 
 /**
  * XSS过滤处理
@@ -32,7 +32,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
             String[] escapesValues = new String[length];
             for (int i = 0; i < length; i++) {
                 // 防xss攻击和过滤前后空格
-                escapesValues[i] = EscapeUtil.clean(values[i]).trim();
+                escapesValues[i] = HTMLFilter.clean(values[i]).trim();
             }
             return escapesValues;
         }
@@ -53,7 +53,7 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper {
         }
 
         // xss过滤
-        json = EscapeUtil.clean(json).trim();
+        json = HTMLFilter.clean(json).trim();
         byte[] jsonBytes = json.getBytes(StandardCharsets.UTF_8);
         final ByteArrayInputStream bis = new ByteArrayInputStream(jsonBytes);
         return new ServletInputStream() {

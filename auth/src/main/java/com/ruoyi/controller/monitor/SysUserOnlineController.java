@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.pagehelper.PageInfo;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.model.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +19,6 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.model.login.LoginUser;
 import com.ruoyi.common.service.RedisService;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.util.StringUtils;
 import com.ruoyi.common.model.sysuser.SysUserOnline;
 import com.ruoyi.common.service.ISysUserOnlineService;
 
@@ -47,15 +46,15 @@ public class SysUserOnlineController {
         {
             LoginUser user = redisService.getValue(key, LoginUser.class);
             Object object = user.getUser();
-            if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName))
+            if (StrUtil.isNotEmpty(ipaddr) && StrUtil.isNotEmpty(userName))
             {
                 userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
             }
-            else if (StringUtils.isNotEmpty(ipaddr))
+            else if (StrUtil.isNotEmpty(ipaddr))
             {
                 userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
             }
-            else if (StringUtils.isNotEmpty(userName) && object != null)
+            else if (StrUtil.isNotEmpty(userName) && object != null)
             {
                 userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
             }

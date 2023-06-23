@@ -22,7 +22,7 @@ public class SysRegisterController {
     private final ISysConfigService configService;
 
     @PostMapping("/register")
-    public R<?> register(@RequestBody RegisterBody user) {
+    public R<String> register(@RequestBody RegisterBody user) {
         if (!("true".equals(configService.selectConfigByKey("sys.account.registerUser")))) {
             return R.fail("当前系统没有开启注册功能！");
         }

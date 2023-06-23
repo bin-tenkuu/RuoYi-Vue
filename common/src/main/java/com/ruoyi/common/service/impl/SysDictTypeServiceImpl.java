@@ -1,12 +1,12 @@
 package com.ruoyi.common.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ruoyi.common.entity.SysDictData;
 import com.ruoyi.common.entity.SysDictType;
 import com.ruoyi.common.mapper.SysDictDataMapper;
 import com.ruoyi.common.mapper.SysDictTypeMapper;
 import com.ruoyi.common.service.ISysDictTypeService;
-import com.ruoyi.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,11 +48,11 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     @Override
     public List<SysDictData> selectDictDataByType(String dictType) {
         List<SysDictData> dictDatas = DICT_CACHE.get(dictType);
-        if (StringUtils.isNotEmpty(dictDatas)) {
+        if (CollUtil.isNotEmpty(dictDatas)) {
             return dictDatas;
         }
         dictDatas = dictDataMapper.selectByType(dictType);
-        if (StringUtils.isNotEmpty(dictDatas)) {
+        if (CollUtil.isNotEmpty(dictDatas)) {
             DICT_CACHE.put(dictType, dictDatas);
             return dictDatas;
         }

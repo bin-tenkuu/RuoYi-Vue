@@ -64,12 +64,12 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:add')")
     @Log(title = "字典类型", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<?> add(@Validated @RequestBody SysDictType dict) {
+    public R<Boolean> add(@Validated @RequestBody SysDictType dict) {
         if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.fail("新增字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         dict.setCreateBy(SecurityUtils.getLoginUser().getUsername());
-        return dictTypeService.insertDictType(dict) > 0 ? R.ok() : R.fail();
+        return R.ok(dictTypeService.insertDictType(dict) > 0);
     }
 
     /**
@@ -78,12 +78,12 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:edit')")
     @Log(title = "字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<?> edit(@Validated @RequestBody SysDictType dict) {
+    public R<Boolean> edit(@Validated @RequestBody SysDictType dict) {
         if (!dictTypeService.checkDictTypeUnique(dict)) {
             return R.fail("修改字典'" + dict.getDictName() + "'失败，字典类型已存在");
         }
         dict.setUpdateBy(SecurityUtils.getLoginUser().getUsername());
-        return dictTypeService.updateDictType(dict) > 0 ? R.ok() : R.fail();
+        return R.ok(dictTypeService.updateDictType(dict) > 0);
     }
 
     /**
@@ -102,9 +102,9 @@ public class SysDictTypeController {
     @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
-    public R<?> refreshCache() {
+    public R<Boolean> refreshCache() {
         dictTypeService.resetDictCache();
-        return R.ok();
+        return R.ok(true);
     }
 
     /**
